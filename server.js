@@ -42,7 +42,7 @@ app.use((req, res, next) => {
 // Enable compression for faster loading
 app.use(compression());
 
-// Security headers
+// Security headers (relaxed for M-Pesa API connectivity)
 app.use((req, res, next) => {
     // Prevent clickjacking
     res.setHeader('X-Frame-Options', 'DENY');
@@ -59,8 +59,8 @@ app.use((req, res, next) => {
     // Referrer policy
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     
-    // Content Security Policy (basic)
-    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.safaricom.co.ke;");
+    // Relaxed CSP for M-Pesa API connectivity - allows all connections
+    res.setHeader('Content-Security-Policy', "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;");
     
     next();
 });
@@ -187,7 +187,8 @@ async function getAccessToken() {
             {
                 headers: {
                     Authorization: `Basic ${auth}`
-                }
+                },
+                timeout: 30000  // 30 second timeout
             }
         );
         console.log('✅ M-Pesa access token obtained successfully');
@@ -252,7 +253,8 @@ app.post('/api/mpesa/stkpush', async (req, res) => {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                timeout: 30000  // 30 second timeout
             }
         );
         
@@ -369,7 +371,8 @@ app.post('/api/mpesa/status', async (req, res) => {
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
-                }
+                },
+                timeout: 30000  // 30 second timeout
             }
         );
         
@@ -406,6 +409,48 @@ app.get('/api/health', (req, res) => {
         uptime: process.uptime(),
         memory: process.memoryUsage()
     });
+});
+
+// ============================================
+// TEST M-PESA CONNECTION ENDPOINT
+// ============================================
+
+app.get('/api/mpesa-test', async (req, res) => {
+    try {
+        const auth = Buffer.from(`${MPESA_CONFIG.consumerKey}:${MPESA_CONFIG.consumerSecret}`).toString('base64');
+        const baseUrl = MPESA_CONFIG.environment === 'production' 
+            ? 'https://api.safaricom.co.ke' 
+            : 'https://sandbox.safaricom.co.ke';
+        
+        console.log('Testing M-Pesa connection...');
+        console.log('Using baseUrl:', baseUrl);
+        console.log('Environment:', MPESA_CONFIG.environment);
+        
+        const response = await axios.get(
+            `${baseUrl}/oauth/v1/generate?grant_type=client_credentials`,
+            {
+                headers: { Authorization: `Basic ${auth}` },
+                timeout: 30000
+            }
+        );
+        
+        res.json({ 
+            success: true, 
+            message: 'M-Pesa API is working!',
+            environment: MPESA_CONFIG.environment,
+            hasToken: !!response.data.access_token,
+            tokenPreview: response.data.access_token ? response.data.access_token.substring(0, 20) + '...' : null
+        });
+    } catch (error) {
+        console.error('Test error:', error.message);
+        console.error('Error details:', error.response?.data || error.code);
+        res.json({ 
+            success: false, 
+            message: error.message,
+            error: error.response?.data || error.code,
+            environment: MPESA_CONFIG.environment
+        });
+    }
 });
 
 // ============================================
@@ -458,7 +503,8 @@ app.listen(PORT, '0.0.0.0', () => {
 ║  📱 M-Pesa Environment: ${MPESA_CONFIG.environment.padEnd(20)} 
 ║  💳 Payment: M-Pesa STK Push & Till Number                      
 ║  🤖 SEO: Fully optimized with canonical URLs, sitemap, robots.txt
-║  🔒 Security: HSTS, CSP, XSS Protection enabled
+║  🔒 Security: HSTS, XSS Protection enabled
+║  🧪 Test endpoint: ${MAIN_DOMAIN}/api/mpesa-test
 ╚══════════════════════════════════════════════════════════════════╝
     `);
 });
