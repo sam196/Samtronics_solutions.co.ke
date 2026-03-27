@@ -29,7 +29,7 @@ const products = [
     alt: 'M-Pesa LED Sign',      // Alt text for accessibility
     shortDesc: 'Fast, reliable display for M-PESA shops.',
     longDesc: 'Bright, durable, and energy-efficient LED boards.',
-    price: 1200                  // Price in KSh
+    price: 1                  // Price in KSh
   },
   { 
     id: 'mpesa-shop', 
