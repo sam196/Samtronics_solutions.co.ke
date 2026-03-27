@@ -1,0 +1,19 @@
+# This file tells Git which files to NOT upload to GitHub
+
+# Node modules (installed packages - too big for GitHub)
+node_modules/
+
+# Environment variables (contains secrets)
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+npm-debug.log*
+
+# IDE files
+.vscode/
+.idea/

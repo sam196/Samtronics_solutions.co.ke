@@ -1,0 +1,551 @@
+/* ============================================ */
+/* CSS VARIABLES - Define colors for light mode */
+/* These are like named colors you can reuse */
+/* ============================================ */
+:root {
+  --bg: #faf8f5;        /* Background color - light cream */
+  --text: #222b33;      /* Text color - dark blue-gray */
+  --surface: #ffffff;   /* Card/surface background - white */
+  --surface-alt: #f6f7f9; /* Alternative background - light gray */
+  --border: #dde2e8;    /* Border color - light gray */
+  --primary: #367861;   /* Primary brand color - green */
+  --cta-bg: #367861;    /* Button background */
+  --cta-hover: #2a6452; /* Button hover color - darker green */
+  --shadow: 0 12px 30px rgba(28, 36, 50, 0.12); /* Box shadow */
+}
+
+/* ============================================ */
+/* DARK MODE - Override colors when dark mode is active */
+/* ============================================ */
+body.dark {
+  --bg: #12171e;        /* Dark background */
+  --text: #e4eaf3;      /* Light text */
+  --surface: #1e252d;   /* Dark card background */
+  --surface-alt: #262d35; /* Darker alternative */
+  --border: #333d4a;    /* Dark border */
+  --primary: #bcd8d0;   /* Light green for dark mode */
+}
+
+/* ============================================ */
+/* GLOBAL STYLES - Applies to everything */
+/* ============================================ */
+* {
+  box-sizing: border-box;  /* Makes padding and border included in width */
+  margin: 0;               /* Remove default margins */
+  padding: 0;              /* Remove default padding */
+}
+
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  /* Use Poppins font if available, otherwise system fonts */
+  
+  background: var(--bg);   /* Use background color from variables */
+  color: var(--text);      /* Use text color from variables */
+  line-height: 1.5;        /* Space between lines */
+  transition: background-color .3s ease;  /* Smooth transition for theme change */
+  overflow-x: hidden;      /* Prevent horizontal scrolling */
+}
+
+/* Smooth scrolling when clicking anchor links */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 70px;  /* Prevents content from hiding under header */
+}
+
+/* ============================================ */
+/* HEADER STYLES - Top navigation bar */
+/* ============================================ */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;  /* Spread items left and right */
+  align-items: center;              /* Center vertically */
+  position: sticky;                /* Stays at top when scrolling */
+  top: 0;
+  z-index: 100;                    /* Stay above other content */
+  box-shadow: var(--shadow);
+  gap: 0.5rem;                     /* Space between items */
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+/* Navigation links */
+nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+nav a {
+  color: var(--text);
+  text-decoration: none;    /* Remove underline */
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+nav a:hover {
+  color: var(--primary);
+  background: var(--surface-alt);
+}
+
+/* Theme toggle button */
+#theme-toggle {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+/* Mobile menu button (hidden on desktop) */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: var(--text);
+}
+
+/* ============================================ */
+/* HERO SECTION - Large banner */
+/* ============================================ */
+.hero {
+  position: relative;
+  min-height: 450px;
+  height: 55vh;
+  overflow: hidden;
+  background: #000;
+}
+
+.hero-slider {
+  position: absolute;
+  inset: 0;  /* Same as top:0; right:0; bottom:0; left:0 */
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* Make video cover the area */
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.hero-slide.active {
+  opacity: 1;  /* Only show active slide */
+}
+
+.hero-overlay {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(135deg, rgba(0,0,0,0.65), rgba(0,0,0,0.55));
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.hero-caption {
+  color: #39ff14;  /* Bright green */
+  font-size: clamp(1.5rem, 6vw, 2.2rem);  /* Responsive font size */
+  margin-bottom: 0.5rem;
+}
+
+.hero-overlay p {
+  font-size: clamp(0.85rem, 3.5vw, 1rem);
+  margin-bottom: 1.2rem;
+  color: #e0e7ff;
+}
+
+.cta-button {
+  background: #39ff14;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  color: #000;
+  font-weight: 700;
+  border-radius: 40px;
+  cursor: pointer;
+}
+
+/* Hero slider controls */
+.hero-controls {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 15px;
+  z-index: 3;
+  transform: translateY(-50%);
+  pointer-events: none;  /* Allow clicking through to buttons */
+}
+
+.hero-controls button {
+  pointer-events: auto;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid #39ff14;
+  color: #39ff14;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Slider indicator dots */
+.hero-dots {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 3;
+}
+
+.hero-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+}
+
+.hero-dot.active {
+  background: #39ff14;
+}
+
+/* ============================================ */
+/* PRODUCTS SECTION */
+/* ============================================ */
+.products, .gallery, .quote, .contact {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.products h3, .gallery h3, .quote h3, .contact h3 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+/* Search bar */
+.product-search {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.product-search input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* Product grid layout */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.2rem;
+}
+
+/* Individual product card */
+.product {
+  background: var(--surface);
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.product img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  cursor: zoom-in;
+}
+
+.price {
+  font-weight: bold;
+  color: #39ff14;
+  font-size: 1.1rem;
+}
+
+.add-to-cart {
+  background: var(--cta-bg);
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 40px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* ============================================ */
+/* GALLERY SECTION */
+/* ============================================ */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.8rem;
+}
+
+.gallery-item {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+  cursor: zoom-in;
+}
+
+/* ============================================ */
+/* PRICE CALCULATOR */
+/* ============================================ */
+.price-calc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  border-radius: 20px;
+}
+
+.price-calc label {
+  display: block;
+  margin-top: 0.75rem;
+  font-weight: 600;
+}
+
+.price-calc select, 
+.price-calc input, 
+.price-calc textarea {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.calc-result {
+  margin-top: 1rem;
+  font-weight: 700;
+  color: #00e676;
+}
+
+/* ============================================ */
+/* CONTACT FORM */
+/* ============================================ */
+form {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 600px;
+  margin: auto;
+}
+
+input, select, textarea {
+  padding: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+button[type="submit"], #calc-button {
+  background: #39ff14;
+  color: #000;
+  font-weight: 700;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+}
+
+/* Contact info */
+.contact {
+  text-align: center;
+}
+
+.till-info {
+  font-weight: 700;
+  color: #00e676;
+  background: rgba(0, 230, 118, 0.15);
+  border-radius: 40px;
+  padding: 0.4rem 1rem;
+  display: inline-block;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  background: var(--surface);
+  padding: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================ */
+/* MODAL (POPUP) STYLES - For cart */
+/* ============================================ */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 200;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+  background: var(--surface);
+  margin: 20% auto;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 1rem;
+  top: 0.5rem;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ============================================ */
+/* LIGHTBOX (IMAGE ZOOM) STYLES */
+/* ============================================ */
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.96);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  width: 44px;
+  height: 44px;
+  font-size: 32px;
+  color: white;
+  background: rgba(0,0,0,0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.lightbox-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  background: rgba(0,0,0,0.8);
+  padding: 10px 16px;
+  border-radius: 50px;
+}
+
+.lightbox-controls button {
+  background: #39ff14;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 40px;
+  cursor: pointer;
+}
+
+/* ============================================ */
+/* RESPONSIVE DESIGN - Mobile phones */
+/* ============================================ */
+@media (max-width: 768px) {
+  /* Show mobile menu button */
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  /* Hide navigation by default on mobile */
+  nav {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    flex-direction: column;
+    padding: 1rem;
+    transform: translateY(-150%);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 99;
+  }
+  
+  /* Show when menu is open */
+  nav.nav-open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  /* Stack products vertically on mobile */
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero {
+    min-height: 380px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+  .hero {
+    min-height: 320px;
+  }
+  
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+  
+  .gallery-item {
+    height: 100px;
+  }
+}
