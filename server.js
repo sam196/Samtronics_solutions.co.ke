@@ -8,6 +8,34 @@ const compression = require('compression');
 const app = express();
 
 // ============================================
+// DOMAIN CONFIGURATION
+// ============================================
+
+// Choose your main domain (pick ONE)
+const MAIN_DOMAIN = 'https://samtronics-solutions-co-ke.onrender.com';
+const OLD_DOMAIN = 'https://samtronics-mpesa-signs.onrender.com';
+
+// ============================================
+// REDIRECT OLD DOMAIN TO MAIN DOMAIN
+// ============================================
+
+app.use((req, res, next) => {
+    const host = req.headers.host;
+    
+    // Redirect old domain to main domain
+    if (host === 'samtronics-mpesa-signs.onrender.com') {
+        return res.redirect(301, `${MAIN_DOMAIN}${req.url}`);
+    }
+    
+    // Ensure HTTPS (Render already handles this, but good practice)
+    if (req.headers['x-forwarded-proto'] !== 'https' && process.env.NODE_ENV === 'production') {
+        return res.redirect(301, `https://${host}${req.url}`);
+    }
+    
+    next();
+});
+
+// ============================================
 // COMPRESSION & SECURITY MIDDLEWARE
 // ============================================
 
@@ -16,11 +44,24 @@ app.use(compression());
 
 // Security headers
 app.use((req, res, next) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
+    // Prevent clickjacking
     res.setHeader('X-Frame-Options', 'DENY');
+    
+    // Prevent MIME type sniffing
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    
+    // XSS protection
     res.setHeader('X-XSS-Protection', '1; mode=block');
+    
+    // HTTPS enforcement (HSTS)
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    
+    // Referrer policy
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    
+    // Content Security Policy (basic)
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.safaricom.co.ke;");
+    
     next();
 });
 
@@ -30,12 +71,23 @@ app.use(cors());
 // Parse JSON request bodies
 app.use(express.json());
 
+// ============================================
+// STATIC FILE SERVING WITH CACHE
+// ============================================
+
 // Serve static files with caching
 app.use(express.static(__dirname, {
     maxAge: '30d',
     setHeaders: (res, filePath) => {
+        // Don't cache HTML files
         if (filePath.endsWith('.html')) {
-            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        }
+        // Cache images, CSS, JS for 30 days
+        if (filePath.match(/\.(css|js|jpg|jpeg|png|gif|ico|webp|mp4)$/)) {
+            res.setHeader('Cache-Control', 'public, max-age=2592000');
         }
     }
 }));
@@ -47,41 +99,55 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // SEO ROUTES
 // ============================================
 
-// Serve sitemap.xml
+// Serve sitemap.xml with correct domain
 app.get('/sitemap.xml', (req, res) => {
     const sitemapPath = path.join(__dirname, 'sitemap.xml');
+    const today = new Date().toISOString().split('T')[0];
+    
+    // If custom sitemap exists, serve it
     if (fs.existsSync(sitemapPath)) {
+        let sitemapContent = fs.readFileSync(sitemapPath, 'utf8');
+        // Replace any old domain with new main domain
+        sitemapContent = sitemapContent.replace(/https:\/\/samtronics-mpesa-signs\.onrender\.com/g, MAIN_DOMAIN);
         res.setHeader('Content-Type', 'application/xml');
-        res.sendFile(sitemapPath);
-    } else {
-        const fallbackSitemap = `<?xml version="1.0" encoding="UTF-8"?>
+        return res.send(sitemapContent);
+    }
+    
+    // Fallback sitemap
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://samtronics-mpesa-signs.onrender.com/</loc>
-        <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+        <loc>${MAIN_DOMAIN}/</loc>
+        <lastmod>${today}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
 </urlset>`;
-        res.setHeader('Content-Type', 'application/xml');
-        res.send(fallbackSitemap);
-    }
+    
+    res.setHeader('Content-Type', 'application/xml');
+    res.send(sitemap);
 });
 
 // Serve robots.txt
 app.get('/robots.txt', (req, res) => {
     const robotsPath = path.join(__dirname, 'robots.txt');
+    
     if (fs.existsSync(robotsPath)) {
+        let robotsContent = fs.readFileSync(robotsPath, 'utf8');
+        // Replace any old domain with new main domain
+        robotsContent = robotsContent.replace(/https:\/\/samtronics-mpesa-signs\.onrender\.com/g, MAIN_DOMAIN);
         res.setHeader('Content-Type', 'text/plain');
-        res.sendFile(robotsPath);
-    } else {
-        const fallbackRobots = `User-agent: *
+        return res.send(robotsContent);
+    }
+    
+    // Fallback robots.txt
+    const robots = `User-agent: *
 Allow: /
 
-Sitemap: https://samtronics-mpesa-signs.onrender.com/sitemap.xml`;
-        res.setHeader('Content-Type', 'text/plain');
-        res.send(fallbackRobots);
-    }
+Sitemap: ${MAIN_DOMAIN}/sitemap.xml`;
+    
+    res.setHeader('Content-Type', 'text/plain');
+    res.send(robots);
 });
 
 // ============================================
@@ -97,13 +163,17 @@ const MPESA_CONFIG = {
 };
 
 console.log('🚀 Samtronics Solutions Server Starting...');
-console.log('📍 Location: Eldoret, Kenya');
-console.log('📱 M-Pesa Environment:', MPESA_CONFIG.environment);
+console.log(`📍 Main Domain: ${MAIN_DOMAIN}`);
+console.log(`📱 M-Pesa Environment: ${MPESA_CONFIG.environment}`);
+console.log('💳 Payment Method: M-Pesa STK Push & Till Number');
 
 // Store active transactions
 const activeTransactions = new Map();
 
-// Get Access Token
+// ============================================
+// GET M-PESA ACCESS TOKEN
+// ============================================
+
 async function getAccessToken() {
     const auth = Buffer.from(`${MPESA_CONFIG.consumerKey}:${MPESA_CONFIG.consumerSecret}`).toString('base64');
     
@@ -120,7 +190,7 @@ async function getAccessToken() {
                 }
             }
         );
-        console.log('✅ Access token obtained');
+        console.log('✅ M-Pesa access token obtained successfully');
         return response.data.access_token;
     } catch (error) {
         console.error('❌ Error getting access token:', error.response?.data || error.message);
@@ -128,12 +198,16 @@ async function getAccessToken() {
     }
 }
 
-// STK Push Endpoint
+// ============================================
+// STK PUSH ENDPOINT - Send payment request to phone
+// ============================================
+
 app.post('/api/mpesa/stkpush', async (req, res) => {
     const { phone, amount, accountReference, transactionDesc } = req.body;
     
-    console.log('📱 STK Push request:', { phone, amount });
+    console.log('📱 STK Push request received:', { phone, amount });
     
+    // Format phone number to 2547XXXXXXXX
     let formattedPhone = phone.toString().replace(/\D/g, '');
     if (formattedPhone.startsWith('0')) {
         formattedPhone = '254' + formattedPhone.substring(1);
@@ -154,25 +228,26 @@ app.post('/api/mpesa/stkpush', async (req, res) => {
             ? 'https://api.safaricom.co.ke' 
             : 'https://sandbox.safaricom.co.ke';
         
-        const callbackUrl = process.env.RENDER_EXTERNAL_HOSTNAME 
-            ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME}/api/mpesa-callback`
-            : 'https://samtronics-mpesa-signs.onrender.com/api/mpesa-callback';
+        // Get callback URL using main domain
+        const callbackUrl = `${MAIN_DOMAIN}/api/mpesa-callback`;
+        
+        const requestData = {
+            BusinessShortCode: MPESA_CONFIG.businessShortCode,
+            Password: password,
+            Timestamp: timestamp,
+            TransactionType: 'CustomerPayBillOnline',
+            Amount: Math.round(amount),
+            PartyA: formattedPhone,
+            PartyB: MPESA_CONFIG.businessShortCode,
+            PhoneNumber: formattedPhone,
+            CallBackURL: callbackUrl,
+            AccountReference: accountReference || 'Samtronics Payment',
+            TransactionDesc: transactionDesc || 'LED Signage Purchase'
+        };
         
         const response = await axios.post(
             `${baseUrl}/mpesa/stkpush/v1/processrequest`,
-            {
-                BusinessShortCode: MPESA_CONFIG.businessShortCode,
-                Password: password,
-                Timestamp: timestamp,
-                TransactionType: 'CustomerPayBillOnline',
-                Amount: Math.round(amount),
-                PartyA: formattedPhone,
-                PartyB: MPESA_CONFIG.businessShortCode,
-                PhoneNumber: formattedPhone,
-                CallBackURL: callbackUrl,
-                AccountReference: accountReference || 'Samtronics Payment',
-                TransactionDesc: transactionDesc || 'LED Signage Purchase'
-            },
+            requestData,
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -181,18 +256,20 @@ app.post('/api/mpesa/stkpush', async (req, res) => {
             }
         );
         
+        // Store transaction for status checking
         activeTransactions.set(response.data.CheckoutRequestID, {
             phone: formattedPhone,
             amount: amount,
             status: 'pending',
             timestamp: new Date(),
-            checkoutRequestID: response.data.CheckoutRequestID
+            checkoutRequestID: response.data.CheckoutRequestID,
+            store: 'Samtronics Solutions - Kenya'
         });
         
         res.json({
             success: true,
             checkoutRequestID: response.data.CheckoutRequestID,
-            message: 'Payment request sent. Check your phone to enter PIN.'
+            message: 'Payment request sent. Please check your phone to enter PIN and complete payment.'
         });
         
     } catch (error) {
@@ -204,78 +281,148 @@ app.post('/api/mpesa/stkpush', async (req, res) => {
     }
 });
 
-// M-Pesa Callback
+// ============================================
+// M-PESA CALLBACK ENDPOINT - Receives payment confirmation
+// ============================================
+
 app.post('/api/mpesa-callback', (req, res) => {
-    console.log('🔔 M-Pesa Callback received');
+    console.log('🔔 M-Pesa Callback received at:', new Date().toISOString());
+    
     const { Body } = req.body;
     
     if (Body && Body.stkCallback) {
         const { CheckoutRequestID, ResultCode, ResultDesc, CallbackMetadata } = Body.stkCallback;
+        
         const transaction = activeTransactions.get(CheckoutRequestID);
         
         if (ResultCode === 0) {
+            // Payment successful
             const metadata = {};
             if (CallbackMetadata && CallbackMetadata.Item) {
                 CallbackMetadata.Item.forEach(item => {
                     metadata[item.Name] = item.Value;
                 });
             }
-            console.log('✅ PAYMENT SUCCESSFUL!', { 
-                checkoutRequestID: CheckoutRequestID, 
-                amount: metadata.Amount, 
-                receipt: metadata.MpesaReceiptNumber 
+            
+            console.log('✅ PAYMENT SUCCESSFUL - Samtronics Solutions!', {
+                checkoutRequestID: CheckoutRequestID,
+                amount: metadata.Amount,
+                receiptNumber: metadata.MpesaReceiptNumber,
+                phoneNumber: metadata.PhoneNumber
             });
-            if (transaction) transaction.status = 'completed';
+            
+            if (transaction) {
+                transaction.status = 'completed';
+                transaction.receiptNumber = metadata.MpesaReceiptNumber;
+                transaction.amount = metadata.Amount;
+            }
         } else {
+            // Payment failed
             console.log('❌ PAYMENT FAILED:', ResultDesc);
-            if (transaction) transaction.status = 'failed';
+            if (transaction) {
+                transaction.status = 'failed';
+                transaction.error = ResultDesc;
+            }
         }
     }
+    
+    // Always respond with success to acknowledge receipt
     res.json({ ResultCode: 0, ResultDesc: 'Success' });
 });
 
-// Check payment status
+// ============================================
+// CHECK PAYMENT STATUS ENDPOINT
+// ============================================
+
 app.post('/api/mpesa/status', async (req, res) => {
     const { checkoutRequestID } = req.body;
     
+    // Check local cache first
     const localTransaction = activeTransactions.get(checkoutRequestID);
     if (localTransaction && localTransaction.status !== 'pending') {
-        return res.json({ 
-            ResultCode: localTransaction.status === 'completed' ? 0 : 1, 
+        return res.json({
+            ResultCode: localTransaction.status === 'completed' ? 0 : 1,
             ResultDesc: localTransaction.status === 'completed' ? 'Success' : localTransaction.error,
-            ...localTransaction 
+            ...localTransaction
         });
     }
     
     try {
         const accessToken = await getAccessToken();
         const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, -3);
-        const password = Buffer.from(`${MPESA_CONFIG.businessShortCode}${MPESA_CONFIG.passkey}${timestamp}`).toString('base64');
-        const baseUrl = MPESA_CONFIG.environment === 'production' ? 'https://api.safaricom.co.ke' : 'https://sandbox.safaricom.co.ke';
+        const password = Buffer.from(
+            `${MPESA_CONFIG.businessShortCode}${MPESA_CONFIG.passkey}${timestamp}`
+        ).toString('base64');
         
-        const response = await axios.post(`${baseUrl}/mpesa/stkpushquery/v1/query`, {
-            BusinessShortCode: MPESA_CONFIG.businessShortCode,
-            Password: password,
-            Timestamp: timestamp,
-            CheckoutRequestID: checkoutRequestID
-        }, { headers: { Authorization: `Bearer ${accessToken}` } });
+        const baseUrl = MPESA_CONFIG.environment === 'production' 
+            ? 'https://api.safaricom.co.ke' 
+            : 'https://sandbox.safaricom.co.ke';
+        
+        const response = await axios.post(
+            `${baseUrl}/mpesa/stkpushquery/v1/query`,
+            {
+                BusinessShortCode: MPESA_CONFIG.businessShortCode,
+                Password: password,
+                Timestamp: timestamp,
+                CheckoutRequestID: checkoutRequestID
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            }
+        );
+        
+        // Update local cache
+        if (activeTransactions.has(checkoutRequestID)) {
+            const transaction = activeTransactions.get(checkoutRequestID);
+            transaction.status = response.data.ResultCode === 0 ? 'completed' : 'failed';
+            if (response.data.ResultCode !== 0) {
+                transaction.error = response.data.ResultDesc;
+            }
+        }
         
         res.json(response.data);
     } catch (error) {
+        console.error('❌ Status check error:', error.response?.data || error.message);
         res.status(500).json({ error: 'Failed to check payment status' });
     }
 });
 
-// Health check
+// ============================================
+// HEALTH CHECK ENDPOINT
+// ============================================
+
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'healthy', 
-        timestamp: new Date().toISOString(), 
-        location: 'Eldoret, Kenya', 
+        timestamp: new Date().toISOString(),
+        domain: MAIN_DOMAIN,
+        location: 'Eldoret, Kenya',
         store: 'Samtronics Solutions',
         environment: MPESA_CONFIG.environment,
-        uptime: process.uptime()
+        paymentMethod: 'M-Pesa STK Push & Till Number',
+        activeTransactions: activeTransactions.size,
+        uptime: process.uptime(),
+        memory: process.memoryUsage()
     });
+});
+
+// ============================================
+// CANONICAL URL HANDLER - Add to HTML responses
+// ============================================
+
+// Intercept HTML responses to inject canonical URL if not present
+app.use((req, res, next) => {
+    const originalSend = res.send;
+    res.send = function(data) {
+        if (typeof data === 'string' && data.includes('</head>') && !data.includes('canonical')) {
+            const canonicalTag = `<link rel="canonical" href="${MAIN_DOMAIN}${req.path === '/' ? '' : req.path}" />\n`;
+            data = data.replace('</head>', `${canonicalTag}</head>`);
+        }
+        originalSend.call(this, data);
+    };
+    next();
 });
 
 // ============================================
@@ -287,7 +434,7 @@ app.use((req, res) => {
 });
 
 // ============================================
-// SERVE FRONTEND
+// SERVE FRONTEND FOR ALL OTHER ROUTES
 // ============================================
 
 app.get('*', (req, res) => {
@@ -295,21 +442,35 @@ app.get('*', (req, res) => {
 });
 
 // ============================================
-// START SERVER
+// START THE SERVER
 // ============================================
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`
-╔══════════════════════════════════════════════════════════╗
-║     🏪 Samtronics Solutions - LED Signages Kenya        ║
-╠══════════════════════════════════════════════════════════╣
-║  🚀 Server running on port: ${PORT}                         
-║  📍 Location: Eldoret, Kenya                            
+╔══════════════════════════════════════════════════════════════════╗
+║     🏪 Samtronics Solutions - LED Signages Kenya                ║
+╠══════════════════════════════════════════════════════════════════╣
+║  🚀 Server running on port: ${PORT}                                     
+║  🌐 Main Domain: ${MAIN_DOMAIN}
+║  🔄 Redirects: ${OLD_DOMAIN} → ${MAIN_DOMAIN}
+║  📍 Location: Eldoret, Kenya                                    
 ║  📱 M-Pesa Environment: ${MPESA_CONFIG.environment.padEnd(20)} 
-║  💳 Payment: M-Pesa STK Push & Till Number              
-║  🌐 URL: https://samtronics-mpesa-signs.onrender.com     
-║  🤖 SEO: Fully optimized with schema, sitemap, robots.txt
-╚══════════════════════════════════════════════════════════╝
+║  💳 Payment: M-Pesa STK Push & Till Number                      
+║  🤖 SEO: Fully optimized with canonical URLs, sitemap, robots.txt
+║  🔒 Security: HSTS, CSP, XSS Protection enabled
+╚══════════════════════════════════════════════════════════════════╝
     `);
+});
+
+// ============================================
+// ERROR HANDLING
+// ============================================
+
+process.on('uncaughtException', (error) => {
+    console.error('❌ Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
 });
