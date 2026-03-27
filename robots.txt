@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://samtronics-mpesa-signs.onrender.com/sitemap.xml
+Sitemap: https://samtronics-solutions-co-ke.onrender.com/sitemap.xml
