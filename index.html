@@ -6,7 +6,7 @@
     
     <!-- SEO Title -->
     <title>Samtronics Solutions | Best LED Signages & M-PESA Boards in Kenya</title>
-    <meta name="google-site-verification" content="E0S1GEr8mgnytoB4XwJZDJySUFuZPtTK0iqIdKzl-Jc" />
+    
     <!-- Meta Description -->
     <meta name="description" content="Samtronics Solutions - Kenya's leading LED signage experts. Custom M-PESA boards, blinking signs, 3D logos, and scrolling displays. Free delivery in Eldoret & Nairobi. Order today!">
     
@@ -16,6 +16,9 @@
     <meta name="author" content="Samtronics Solutions">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://samtronics-mpesa-signs.onrender.com">
+    
+    <!-- Google Site Verification (Add your verification code here when you get it) -->
+    <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE">
     
     <!-- Open Graph Tags for Social Media -->
     <meta property="og:title" content="Samtronics Solutions | LED Signages & M-PESA Boards Kenya">
@@ -36,7 +39,7 @@
     <meta name="geo.placename" content="Eldoret, Kenya">
     <meta name="geo.position" content="0.5143;35.2698">
     <meta name="ICBM" content="0.5143, 35.2698">
-    
+    <meta name="google-site-verification" content="E0S1GEr8mgnytoB4XwJZDJySUFuZPtTK0iqIdKzl-Jc" />
     <!-- Business Info -->
     <meta name="business:contact_data:country" content="Kenya">
     <meta name="business:contact_data:phone" content="+254741842196">
@@ -44,6 +47,16 @@
     
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Analytics (Add your GA4 ID when you get it) -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
     
     <!-- Organization Schema -->
     <script type="application/ld+json">
@@ -69,6 +82,7 @@
       "email": "nkasengesi@gmail.com",
       "priceRange": "KSh 1,200 - KSh 150,000",
       "paymentAccepted": "Cash, M-Pesa, Bank Transfer",
+      "openingHours": "Mo-Sa 08:00-18:00",
       "areaServed": ["Eldoret", "Nairobi", "Kenya"]
     }
     </script>
@@ -110,6 +124,14 @@
             "@type": "Answer",
             "text": "Yes, we deliver nationwide. We have a pick-up point in Nairobi for convenience."
           }
+        },
+        {
+          "@type": "Question",
+          "name": "How long does it take to make a custom LED sign?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Custom LED signs typically take 3-7 days depending on complexity."
+          }
         }
       ]
     }
@@ -128,6 +150,7 @@
             "@type": "Product",
             "name": "M-PESA LED Board",
             "description": "Bright, durable LED board for M-PESA shops",
+            "image": "https://samtronics-mpesa-signs.onrender.com/images/mpesa_1200-edited.jpg",
             "offers": {
               "@type": "Offer",
               "price": "1200",
@@ -143,6 +166,7 @@
             "@type": "Product",
             "name": "Custom Blinking Sign",
             "description": "Animated LED sign for business branding",
+            "image": "https://samtronics-mpesa-signs.onrender.com/images/blinking-sign-edited.jpg",
             "offers": {
               "@type": "Offer",
               "price": "4500",
@@ -158,6 +182,7 @@
             "@type": "Product",
             "name": "Outdoor LED Display",
             "description": "Large digital display for events",
+            "image": "https://samtronics-mpesa-signs.onrender.com/images/led-display-edited.jpg",
             "offers": {
               "@type": "Offer",
               "price": "4500",
@@ -165,36 +190,34 @@
               "availability": "https://schema.org/InStock"
             }
           }
+        }
+      ]
+    }
+    </script>
+    
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://samtronics-mpesa-signs.onrender.com/"
         },
         {
           "@type": "ListItem",
-          "position": 4,
-          "item": {
-            "@type": "Product",
-            "name": "3D LED Sign",
-            "description": "Premium 3D illuminated logos",
-            "offers": {
-              "@type": "Offer",
-              "price": "15000",
-              "priceCurrency": "KES",
-              "availability": "https://schema.org/InStock"
-            }
-          }
+          "position": 2,
+          "name": "Products",
+          "item": "https://samtronics-mpesa-signs.onrender.com/#products"
         },
         {
           "@type": "ListItem",
-          "position": 5,
-          "item": {
-            "@type": "Product",
-            "name": "Scrolling LED Display",
-            "description": "Dynamic message board for promotions",
-            "offers": {
-              "@type": "Offer",
-              "price": "1800",
-              "priceCurrency": "KES",
-              "availability": "https://schema.org/InStock"
-            }
-          }
+          "position": 3,
+          "name": "LED Signages",
+          "item": "https://samtronics-mpesa-signs.onrender.com/#products"
         }
       ]
     }
@@ -217,6 +240,15 @@
     <button class="mobile-menu-toggle" id="mobile-menu-toggle">☰</button>
 </header>
 
+<!-- Breadcrumb Navigation -->
+<div class="breadcrumb">
+    <div class="container">
+        <a href="#home">Home</a>
+        <span class="separator">›</span>
+        <span>LED Signages Kenya</span>
+    </div>
+</div>
+
 <section class="hero" id="home">
     <div class="hero-slider" id="hero-slider">
         <video class="hero-slide active" autoplay muted loop playsinline>
@@ -227,7 +259,7 @@
         </video>
     </div>
     <div class="hero-overlay">
-        <h2 class="hero-caption">Lighting Up Kenyan Businesses</h2>
+        <h1 class="hero-caption">Lighting Up Kenyan Businesses</h1>
         <p>Custom LED Signages • M-PESA Display Boards • Blinking Signs</p>
         <button class="cta-button" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Shop Now</button>
     </div>
@@ -239,7 +271,7 @@
 </section>
 
 <section class="products" id="products">
-    <h3>Our Products</h3>
+    <h2>Our LED Signage Products</h2>
     <div class="product-search">
         <input type="search" id="product-search" placeholder="Search products by name, price, or feature...">
     </div>
@@ -248,14 +280,14 @@
 </section>
 
 <section class="gallery" id="gallery">
-    <h3>Our Gallery</h3>
+    <h2>Our LED Signage Gallery</h2>
     <div class="gallery-grid" id="gallery-grid"></div>
 </section>
 
 <section class="quote" id="quote">
-    <h3>Request a Quote</h3>
+    <h2>Request a Quote for Your Custom LED Sign</h2>
     <div class="price-calc">
-        <h4>Instant Price Calculator</h4>
+        <h3>Instant Price Calculator</h3>
         <label for="calc-product">Choose Product</label>
         <select id="calc-product">
             <option value="">-- Select Product --</option>
@@ -263,7 +295,7 @@
         <label for="calc-quantity">Quantity</label>
         <input type="number" id="calc-quantity" min="1" value="1">
         <label for="calc-comment">Customization Notes</label>
-        <textarea id="calc-comment" rows="3" placeholder="Enter your requirements"></textarea>
+        <textarea id="calc-comment" rows="3" placeholder="Enter your requirements (size, color, text, etc.)"></textarea>
         <p class="calc-result">Estimated price: KSh <span id="calc-price">0</span></p>
         <button id="calc-button">Calculate</button>
     </div>
@@ -278,13 +310,13 @@
             <option value="3d-sign">3D LED Sign</option>
             <option value="scrolling">Scrolling LED Display</option>
         </select>
-        <textarea name="message" rows="4" placeholder="Additional Details"></textarea>
-        <button type="submit">Submit</button>
+        <textarea name="message" rows="4" placeholder="Additional Details (size, color, text, location)"></textarea>
+        <button type="submit">Submit Quote Request</button>
     </form>
 </section>
 
 <section class="contact" id="contact">
-    <h3>Contact Us</h3>
+    <h2>Contact Samtronics Solutions</h2>
     <p>📍 Santuri Court, Room B10, Eldoret | Pick-Up Point: Nairobi</p>
     <p>☎ <a href="tel:+254741842196">0741 842 196</a> | ✉ <a href="mailto:nkasengesi@gmail.com">nkasengesi@gmail.com</a></p>
     <p>🌐 Follow us: <a href="https://web.facebook.com/profile.php?id=100063622343598" target="_blank" rel="noopener">Facebook</a></p>
@@ -292,8 +324,64 @@
 </section>
 
 <footer>
-    <p>© 2025 Samtronics Solutions – Lighting Up Kenyan Businesses | Eldoret • Nairobi • Nationwide</p>
-    <p class="till-info">Buy Goods Till No: 5673977</p>
+    <div class="footer-container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>Samtronics Solutions</h3>
+                <p>Kenya's premier LED signage manufacturer specializing in M-PESA boards, custom blinking signs, and digital displays.</p>
+                <div class="social-links">
+                    <a href="https://web.facebook.com/profile.php?id=100063622343598" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#products">LED Signages</a></li>
+                    <li><a href="#products">M-PESA Boards</a></li>
+                    <li><a href="#products">Blinking Signs</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
+                    <li><a href="#quote">Request Quote</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#">Custom LED Design</a></li>
+                    <li><a href="#">Installation Services</a></li>
+                    <li><a href="#">Maintenance & Repairs</a></li>
+                    <li><a href="#">Nationwide Delivery</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Locations Served</h4>
+                <ul>
+                    <li>Eldoret</li>
+                    <li>Nairobi</li>
+                    <li>Kisumu</li>
+                    <li>Nakuru</li>
+                    <li>Mombasa</li>
+                    <li>Nationwide</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact Info</h4>
+                <ul class="contact-info">
+                    <li><i class="fas fa-map-marker-alt"></i> Santuri Court, Eldoret</li>
+                    <li><i class="fas fa-phone"></i> 0741 842 196</li>
+                    <li><i class="fas fa-envelope"></i> nkasengesi@gmail.com</li>
+                    <li><i class="fas fa-clock"></i> Mon-Sat: 8am - 6pm</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 Samtronics Solutions – Lighting Up Kenyan Businesses | Eldoret • Nairobi • Nationwide</p>
+            <p class="till-info">M-PESA Buy Goods Till No: 5673977</p>
+        </div>
+    </div>
 </footer>
 
 <!-- SEO Content Section (Hidden but helps search engines) -->
@@ -308,8 +396,17 @@
         <li>3D LED Signs - Premium illuminated logos</li>
         <li>Scrolling LED Displays - Dynamic message boards</li>
     </ul>
-    <h2>Service Areas</h2>
+    <h2>Service Areas in Kenya</h2>
     <p>We serve clients across Kenya: Eldoret, Nairobi, Kisumu, Nakuru, Mombasa, Thika, Nyeri, Kitale, Kakamega, and all major towns.</p>
+    <h2>Why Choose Samtronics Solutions?</h2>
+    <ul>
+        <li>High-quality, durable LED signs</li>
+        <li>Competitive prices starting from KSh 1,200</li>
+        <li>Free delivery in Eldoret for orders over KSh 5,000</li>
+        <li>Custom designs tailored to your brand</li>
+        <li>Nationwide delivery available</li>
+        <li>Fast turnaround time (3-7 days for custom orders)</li>
+    </ul>
 </div>
 
 <div id="image-lightbox" class="image-lightbox" style="display:none;">
